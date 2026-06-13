@@ -1,0 +1,41 @@
+name: Mini Food App CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get code from GitHub
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check Python syntax
+        run: python -m py_compile app.py
+
+      - name: Test health endpoint
+        run: |
+          python - <<'PY'
+          from app import app
+
+          client = app.test_client()
+          response = client.get("/health")
+
+          assert response.status_code == 200
+          data = response.get_json()
+          assert data["status"] == "ok"
+
+          print("Health check passed")
+          PY
