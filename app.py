@@ -15,7 +15,7 @@ menu_items = [
 
 @app.before_request
 def log_request():
-    app.logger.info(f"Request received: {request.method} {request.path}")
+    print(f"Request received: {request.method} {request.path}", flush=True)
 
 @app.route("/")
 def home():
